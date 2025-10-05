@@ -1,0 +1,16 @@
+.site-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem 1rem;
+	background: #222;
+	color: white;
+}
+.site-header a { color: #fff; text-decoration: none; }
+.site-header nav a { margin-left: 1rem; }
+
+.site-header, .site-header * {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  font-size: 1rem;
+}
+

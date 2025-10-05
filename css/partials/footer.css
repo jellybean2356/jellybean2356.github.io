@@ -1,0 +1,13 @@
+.site-footer {
+	padding: 1rem;
+	text-align: center;
+	background: #f4f4f4;
+	color: #333;
+	margin-top: 2rem;
+}
+.site-footer a { color: #007acc; }
+
+.site-footer, .site-footer * {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
