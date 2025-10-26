@@ -3,14 +3,91 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0.5rem 1rem;
-	background: #222;
+	background: linear-gradient(135deg, rgba(53, 53, 77, 0.8) 0%, rgb(20, 20, 25) 100%);
 	color: white;
+	border-radius: 10px;
 }
-.site-header a { color: #fff; text-decoration: none; }
+.site-header a { color: #c9c9c9; text-decoration: none; }
 .site-header nav a { margin-left: 1rem; }
+
+.site-nav { position: relative; display: inline-flex; align-items: center; }
+.site-nav a { position: relative; padding: 6px 4px; }
+.nav-underline {
+	position: absolute;
+	height: 2px;
+	background: #fff;
+	bottom: 6px;
+	left: 0; 
+	width: 0;
+	transform-origin: center;
+	transform: translateX(-50%) scaleX(1);
+	transition: left 280ms cubic-bezier(.2,.8,.2,1), transform 220ms cubic-bezier(.2,.8,.2,1);
+}
+.site-nav a.active { color: #fff; }
+
+.site-nav a {
+	transition: transform 180ms ease, color 150ms ease, text-shadow 150ms ease;
+}
+.site-nav a:hover {
+	transform: translateY(-3px);
+	color: #fff;
+	text-shadow: 0 2px 8px rgba(255,255,255,0.05);
+}
+
+.site-header h1 a {
+	display: inline-block;
+	transition: transform 180ms cubic-bezier(.2,.8,.2,1), color 150ms ease;
+	position: relative; /* ensure link sits above the decorative text */
+	z-index: 3;
+}
+.site-header h1 a:hover {
+	transform: scale(1.03);
+}
+
+.nav-underline--glow {
+	box-shadow: 0 6px 18px rgba(255,255,255,0.08);
+}
+
+.site-nav a:focus-visible, .site-header h1 a:focus-visible {
+	outline: 3px solid rgba(255,255,255,0.12);
+	outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.site-nav a, .site-header h1 a, .nav-underline {
+		transition: none !important;
+	}
+}
 
 .site-header, .site-header * {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-  font-size: 1rem;
+	font-size: .9rem;
 }
 
+.site-header h1 a {
+	font-weight: 700;
+	font-size: 1.1rem;
+	color: #fff; 
+}
+
+/* place a subtle domain hint behind the title, visually behind the link text */
+.site-header h1 {
+	position: relative;
+	z-index: 2; /* keep the whole h1 area above the header background */
+	overflow: visible; /* space for the domain hint on the right */
+	padding-right: 0.35rem; /* smaller space so the domain sits closer */
+}
+.site-header h1::after {
+	content: '.novelya.me';
+	position: absolute;
+	left: 100%;
+	top: 50%;
+	/* nudge slightly down so it vertically aligns with the jellybean text */
+	transform: translateY(-35%) translateX(0px);
+	font-size: 0.85rem;
+	color: rgba(200,200,200,0.28);
+	z-index: 1; /* behind the link (z-index:3) but above header background */
+	pointer-events: none;
+	user-select: none;
+	white-space: nowrap;
+}

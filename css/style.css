@@ -1,0 +1,225 @@
+/* Import JetBrains Mono from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+main {
+	font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color:aliceblue;
+	text-align: center;
+}
+
+/* programming-style smooth blinking cursor after H1 in the main content */
+main h1 {
+	display: inline-block; /* keep cursor tight to text */
+	position: relative;
+}
+
+main h1::after {
+	content: '_';
+	display: inline-block;
+	margin-left: 0.18ch;
+	opacity: 1;
+	color: currentColor;
+	font-weight: 600;
+	transform-origin: center;
+	animation: cursor-blink 0.7s ease-in-out infinite;
+}
+
+@keyframes cursor-blink {
+	0% { opacity: 1; }
+	50% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	main h1::after { animation: none !important; opacity: 1 !important; }
+}
+
+/* Subtle continuous falling stars background tuned to header purple tone */
+#site-bg {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-color: #0b0c12;
+	overflow: hidden;
+}
+
+/* soft purple cloud blobs for depth */
+#site-bg .cloud { position: absolute; border-radius: 50%; filter: blur(40px) saturate(1.02); opacity: 0.10; transition: transform 600ms ease, opacity 420ms ease; }
+#site-bg .cloud--a { width: 70vmax; height: 70vmax; left: -12vw; top: -8vh; background: radial-gradient(circle at 30% 30%, rgba(83,83,131,0.95) 0%, rgba(83,83,131,0.06) 24%, transparent 48%); }
+#site-bg .cloud--b { width: 55vmax; height: 55vmax; right: -6vw; top: 4vh; background: radial-gradient(circle at 60% 40%, rgba(83,83,131,0.9) 0%, rgba(83,83,131,0.05) 34%, transparent 60%); opacity: 0.08; }
+#site-bg .cloud--c { width: 40vmax; height: 40vmax; left: 10vw; bottom: -3vh; background: radial-gradient(circle at 30% 60%, rgba(110,90,160,0.85) 0%, rgba(110,90,160,0.04) 30%, transparent 60%); opacity: 0.06; filter: blur(36px); }
+#site-bg .cloud--d { width: 30vmax; height: 30vmax; right: 20vw; top: 30vh; background: radial-gradient(circle at 40% 20%, rgba(120,100,170,0.75) 0%, rgba(120,100,170,0.03) 28%, transparent 56%); opacity: 0.05; filter: blur(32px); }
+#site-bg .cloud--e { width: 26vmax; height: 26vmax; left: 35vw; top: 12vh; background: radial-gradient(circle at 40% 40%, rgba(100,80,150,0.7) 0%, rgba(100,80,150,0.02) 28%, transparent 56%); opacity: 0.045; filter: blur(28px); }
+#site-bg .cloud--f { width: 18vmax; height: 18vmax; right: 6vw; bottom: 18vh; background: radial-gradient(circle at 30% 60%, rgba(130,110,180,0.6) 0%, rgba(130,110,180,0.02) 28%, transparent 56%); opacity: 0.04; filter: blur(22px); }
+
+/* cloud motion: variable-driven X/Y translation to give each cloud unique movement
+	 NOTE: Do NOT change color or opacity here — only position. Durations kept near original (48s). */
+@keyframes cloud-motion {
+	0% { transform: translate(var(--dx-start, -6px), var(--dy-start, 0px)); }
+	50% { transform: translate(var(--dx-mid, 6px), var(--dy-mid, 6px)); }
+	100% { transform: translate(var(--dx-end, -6px), var(--dy-end, 0px)); }
+}
+#site-bg .cloud { animation: cloud-motion var(--cloud-dur, 48s) ease-in-out infinite alternate; }
+
+/* per-cloud position motion presets (only X/Y offsets and optional delays) */
+#site-bg .cloud--a { --cloud-dur: 48s; --dx-start: -10vw; --dx-mid: -2vw; --dx-end: 8vw; --dy-start: -4vh; --dy-mid: -1vh; --dy-end: -6vh; animation-delay: -6s; }
+#site-bg .cloud--b { --cloud-dur: 44s; --dx-start: 6vw; --dx-mid: -3vw; --dx-end: -10vw; --dy-start: 4vh; --dy-mid: 8vh; --dy-end: 2vh; animation-delay: -12s; }
+#site-bg .cloud--c { --cloud-dur: 52s; --dx-start: 8vw; --dx-mid: 12vw; --dx-end: 4vw; --dy-start: 6vh; --dy-mid: 2vh; --dy-end: -2vh; animation-delay: -4s; }
+#site-bg .cloud--d { --cloud-dur: 46s; --dx-start: -4vw; --dx-mid: 6vw; --dx-end: -2vw; --dy-start: 22vh; --dy-mid: 26vh; --dy-end: 18vh; animation-delay: -20s; }
+#site-bg .cloud--e { --cloud-dur: 42s; --dx-start: 10vw; --dx-mid: -6vw; --dx-end: 6vw; --dy-start: 10vh; --dy-mid: 8vh; --dy-end: 14vh; animation-delay: -8s; }
+#site-bg .cloud--f { --cloud-dur: 50s; --dx-start: -6vw; --dx-mid: -12vw; --dx-end: -4vw; --dy-start: -2vh; --dy-mid: 6vh; --dy-end: -6vh; animation-delay: -16s; }
+
+/* stars container */
+#site-bg .stars { position: absolute; inset: 0; }
+
+/* a falling star (small, subtle) */
+.site-star { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.95); box-shadow: 0 0 10px rgba(255,255,255,0.65); opacity: 0.16; /* remove transform transitions so JS-driven vertical motion doesn't interpolate upward */ transform: translateX(var(--drift,0px)) translateY(0px) scale(0.95); transition: opacity 300ms ease; will-change: transform, opacity; }
+.site-star.purple { background: rgba(220,195,255,1); box-shadow: 0 0 14px rgba(160,130,230,0.45); }
+
+/* keyframes for a continuous fall; each star will use different duration/delay */
+@keyframes star-fall { from { transform: translateX(var(--drift,0px)) translateY(-12vh) scale(0.8); opacity: 0.08 } to { transform: translateX(var(--drift,0px)) translateY(110vh) scale(1); opacity: 0.04 } }
+
+/* subtle twinkle to make stars more visible (only opacity/blur to avoid transform conflicts) */
+@keyframes star-twinkle { 0% { opacity: 0.12; box-shadow: 0 0 8px rgba(255,255,255,0.45) } 50% { opacity: 0.28; box-shadow: 0 0 16px rgba(255,255,255,0.82) } 100% { opacity: 0.12; box-shadow: 0 0 8px rgba(255,255,255,0.45) } }
+
+/* .anim is just a marker; twinkle is applied inline so we don't rely on CSS animating transform */
+.site-star.twinkle { animation-name: star-twinkle; animation-iteration-count: infinite; animation-fill-mode: both; animation-timing-function: ease-in-out; }
+
+/* speedy state: short light streak trailing the star and stronger glow */
+.site-star.speedy { filter: brightness(1.12); opacity: 0.36; }
+.site-star.speedy::after {
+	content: '';
+	position: absolute;
+	right: 100%; /* trail appears behind star to the upwards-left depending on drift */
+	top: 50%;
+	transform: translateY(-50%);
+	width: 28px;
+	height: 2px;
+	background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.65));
+	border-radius: 2px;
+	filter: blur(6px);
+	pointer-events: none;
+	opacity: 0.95;
+}
+
+/* mild active state when a section change happens: clouds shift and stars brighten
+	NOTE: do NOT change transforms on .site-star here — that would override the falling animation.
+	Only tweak visual properties (opacity, box-shadow, filter). */
+#site-bg.active .cloud { transform: translateY(-6px) scale(1.02); }
+/* keep active pulse focused on clouds only; star brightness is controlled by persistent variants below */
+
+/* persistent background variants — each section change cycles one variant */
+#site-bg.variant-0 .cloud--a { transform: translateX(-8vw) scale(1); opacity: 0.10; }
+#site-bg.variant-0 .cloud--b { transform: translateX(6vw) scale(1); opacity: 0.08; }
+
+#site-bg.variant-1 .cloud--a { transform: translateX(0vw) scale(1.06); opacity: 0.115; }
+#site-bg.variant-1 .cloud--b { transform: translateX(-4vw) scale(1.02); opacity: 0.095; }
+/* subtle persistent brightening: remains after section-change, but kept low */
+#site-bg.variant-1 .site-star { opacity: 0.18; filter: brightness(1.05); box-shadow: 0 0 12px rgba(255,255,255,0.6); }
+#site-bg.variant-1 .site-star.purple { background: rgba(240,210,255,1); box-shadow: 0 0 12px rgba(180,140,240,0.45); }
+
+#site-bg.variant-2 .cloud--a { transform: translateX(6vw) scale(0.96); opacity: 0.11; }
+#site-bg.variant-2 .cloud--b { transform: translateX(-10vw) scale(1.08); opacity: 0.13; }
+/* subtle persistent variant dim/bright adjustments */
+#site-bg.variant-2 .site-star { opacity: 0.16; filter: brightness(1.03); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+#site-bg.variant-2 .site-star.purple { background: rgba(200,170,240,1); box-shadow: 0 0 10px rgba(150,110,220,0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+	#site-bg, #site-bg .cloud, .site-star { transition: none !important; animation: none !important; transform: none !important; }
+}
+
+/* layout and typography for main content (non-invasive) */
+main {
+	max-width: 900px;
+	margin: 2.25rem auto;
+	padding: 0 1rem;
+	text-align: left; /* main content reads left-aligned for paragraphs */
+	line-height: 1.6;
+	color: #e6e9ff;
+}
+
+main h1, main h2, main h3 { color: #fff; margin: 0 0 0.65rem 0; }
+main h1 { font-size: 1.4rem; font-weight: 700; }
+main h2 { font-size: 1.05rem; font-weight: 600; margin-top: 1.15rem; }
+
+/* collapse long runs of <br> to a single gap so legacy content doesn't create huge whitespace */
+main br + br, main br + br + br { display: none; }
+main br { line-height: 0.25; }
+
+/* project grid (optional) */
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.project-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); padding: 0.9rem; border-radius: 8px; }
+.project-card h3 { margin: 0 0 0.35rem 0; font-size: 1rem; }
+.project-card p { margin: 0; color: #d6d6e8; font-size: 0.95rem; }
+
+@media (max-width: 640px) {
+	main { margin: 1.1rem auto; }
+	main h1 { font-size: 1.25rem; }
+}
+
+/* hardware page cards */
+.hardware-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.25rem; }
+.hw-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 0.85rem; border-radius: 10px; display:flex; flex-direction:column; }
+.hw-card-head h2 { margin: 0 0 0.5rem 0; font-size: 1rem; }
+.hw-card-body { display:flex; align-items:center; gap:0.6rem; }
+.hw-card-body.hw-single { display:flex; align-items:center; gap:0.6rem; }
+.hw-item { flex:1; }
+.hw-item h3 { margin: 0 0 0.25rem 0; font-size: 0.95rem; }
+.hw-item p { margin: 0; color: #d6d6e8; font-size: 0.92rem; }
+.hw-prev, .hw-next { background: rgba(255,255,255,0.03); border: none; color: #dcd6ff; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: transform 160ms ease, background 160ms ease; }
+.hw-prev:hover:not([disabled]), .hw-next:hover:not([disabled]) { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
+
+/* disabled arrows: visible but muted */
+.hw-prev[disabled], .hw-next[disabled] { opacity: 0.36; filter: grayscale(60%); cursor: default; }
+
+/* images placed in hardware cards: keep them responsive and prevent breaking layout */
+.hardware-grid img, .hw-card img {
+	display:block;
+	max-width: 100%;
+	height: auto;
+	margin-top: 0.6rem;
+	border-radius: 6px;
+}
+
+/* Layout: show image to the right for the currently visible .hw-item only.
+   Use :not([hidden]) so non-active slides stay hidden and are not exposed by layout rules. */
+.hw-card-body { overflow: hidden; }
+.hw-item:not([hidden]) { display: flex; align-items: flex-start; gap: 1rem; }
+.hw-item:not([hidden]) > img { flex: 0 0 220px; max-width: 220px; height: auto; border-radius: 6px; margin-left: 1rem; margin-right: 1rem; }
+.hw-item:not([hidden]) > *:not(img) { display: block; }
+
+/* ensure arrows are above images and clickable */
+.hw-prev, .hw-next { position: relative; z-index: 3; }
+
+.hw-item img { pointer-events: none; }
+
+@media (max-width:480px) {
+    .hw-item:not([hidden]) { flex-direction: column; align-items: flex-start; }
+    .hw-item:not([hidden]) > img { width: 100%; max-width: none; flex: none; margin-top: .6rem; }
+}
+
+@media (max-width:480px) {
+	.hw-card-body { gap:0.35rem; }
+	.hw-prev, .hw-next { padding: 6px; }
+}
+
+/* link styles: brighter, with subtle lift and glow on hover/focus (only for main content) */
+:root {
+	--link-color: #a191e5; /* soft purple */
+	--link-hover: #7e65c2;
+	--link-glow: 0 6px 18px rgba(106, 0, 255, 0.12);
+}
+
+/* scope to main so header/footer nav links keep their own styles */
+main a { color: var(--link-color); text-decoration: none; position: relative; transition: color 180ms ease, transform 160ms ease, text-shadow 200ms ease; }
+main a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: linear-gradient(90deg, transparent, rgba(216,194,255,0.35), transparent); opacity: 0; transform: scaleX(0.85); transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+main a:hover, main a:focus { color: var(--link-hover); transform: translateY(-2px); text-shadow: var(--link-glow); }
+main a:hover::after, main a:focus::after { opacity: 1; transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+	main a { transition: none !important; transform: none !important; }
+	main a::after { transition: none !important; }
+}

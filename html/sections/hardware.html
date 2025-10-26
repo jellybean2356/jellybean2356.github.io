@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>jellybean - hardware</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/partials/header.css" />
+    <link rel="stylesheet" href="/css/partials/footer.css" />
+</head>
+<body>
+    <div data-include="/html/partials/header.html"></div>
+
+    <main>
+        <h1>hardware</h1>
+
+        <section class="hardware-grid">
+            <article class="hw-card hw-card--computers" data-widget="carousel">
+                <div class="hw-card-head">
+                    <h2>computers</h2>
+                </div>
+                <div class="hw-card-body">
+                    <button class="hw-prev" aria-label="previous">◀</button>
+                    <div class="hw-item" data-index="0">
+                        <h3>primary computer</h3>
+                        <p>workstation: ryzen desktop, 32gb ram, rtx gpu — main development machine.</p>
+                        <img src="/assets/placeholder.png" alt="primary computer image">
+                    </div>
+                    <div class="hw-item" data-index="1" hidden>
+                        <h3>secondary computer</h3>
+                        <p>laptop: lightweight device for travel and quick testing.</p>
+                        <img src="/assets/placeholder.png" alt="secondary computer image">
+                    </div>
+                    <div class="hw-item" data-index="2" hidden>
+                        <h3>server</h3>
+                        <p>small home server for backups and services.</p>
+                        <img src="/assets/placeholder.png" alt="server image">
+                    </div>
+                    <button class="hw-next" aria-label="next">▶</button>
+                </div>
+            </article>
+
+            <article class="hw-card hw-card--headphones" data-widget="carousel">
+                <div class="hw-card-head"><h2>headphones</h2></div>
+                <div class="hw-card-body">
+                    <button class="hw-prev" aria-label="previous">◀</button>
+                    <div class="hw-item" data-index="0">
+                        <h3>headphones a</h3>
+                        <p>closed-back headphones, comfortable for longer sessions.</p>
+                        <img src="/assets/placeholder.png" alt="headphones a image">
+                    </div>
+                    <div class="hw-item" data-index="1" hidden>
+                        <h3>headphones b</h3>
+                        <p>open-back headphones, better soundstage for mixing.</p>
+                        <img src="/assets/placeholder.png" alt="headphones b image">
+                    </div>
+                    <button class="hw-next" aria-label="next">▶</button>
+                </div>
+            </article>
+
+            <article class="hw-card hw-card--phone">
+                <div class="hw-card-head"><h2>phone</h2></div>
+                <div class="hw-card-body hw-single">
+                    <button class="hw-prev" aria-label="previous" disabled>◀</button>
+                    <div class="hw-item">
+                        <h3>daily phone</h3>
+                        <p>main smartphone for calls and media.</p>
+                        <img src="/assets/placeholder.png" alt="phone image">
+                    </div>
+                    <button class="hw-next" aria-label="next" disabled>▶</button>
+                </div>
+            </article>
+
+            <article class="hw-card hw-card--printer">
+                <div class="hw-card-head"><h2>3d printer</h2></div>
+                <div class="hw-card-body hw-single">
+                    <button class="hw-prev" aria-label="previous" disabled>◀</button>
+                    <div class="hw-item">
+                        <h3>ender 5 plus</h3>
+                        <p>used for prototyping and printing project parts.</p>
+                        <img src="/assets/placeholder.png" alt="3d printer image">
+                    </div>
+                    <button class="hw-next" aria-label="next" disabled>▶</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <div data-include="/html/partials/footer.html"></div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

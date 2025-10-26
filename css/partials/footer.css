@@ -1,13 +1,54 @@
 .site-footer {
-	padding: 1rem;
-	text-align: center;
-	background: #f4f4f4;
-	color: #333;
-	margin-top: 2rem;
+	position: relative; /* contain the decorative line pseudo-element */
+	padding: 2.25rem 1rem 1rem;
+	color: #dfe7ff;
 }
-.site-footer a { color: #007acc; }
+.site-footer .footer-inner { display:flex; gap:1rem; align-items:center; justify-content:center; flex-direction:column; }
+.socials { display:flex; gap:0.6rem; }
+.social-link { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; background: rgba(255,255,255,0.02); color: #dcd6ff; text-decoration:none; transition: transform 160ms ease, background 160ms ease, color 160ms ease; }
+.social-link svg { display:block; width:18px; height:18px; }
+.social-link:hover { transform: translateY(-3px); background: rgba(255,255,255,0.04); color:#fff; }
+.social-link i { font-size:18px; line-height:18px; display:block; }
+.footer-bottom { margin-top:1rem; text-align:center; color:#97a0d9; }
+.footer-bottom a { color:#cfc9ff; text-decoration:underline; }
 
-.site-footer, .site-footer * {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+.site-footer, .site-footer * { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
+
+/* decorative horizontal line above the footer, inset from left/right */
+.site-footer::before {
+	content: '';
+	position: absolute;
+	left: 3.5vw; /* start a little bit from left */
+	right: 3.5vw; /* end a little bit before right */
+	height: 1px;
+	top: 0;
+	transform: translateY(-12px);
+	background: linear-gradient(90deg, rgba(255,255,255,0.00), rgba(200,180,255,0.12), rgba(255,255,255,0.00));
+	border-radius: 2px;
+}
+
+/* footer contact link visual treatment (matches main links) */
+.site-footer .footer-bottom a {
+	color: var(--link-color);
+	text-decoration: none;
+	transition: color 180ms ease, transform 160ms ease, text-shadow 200ms ease;
+	position: relative;
+}
+.site-footer .footer-bottom a::after {
+	content: '';
+	position: absolute;
+	left: 0; right: 0; bottom: -2px; height: 2px;
+	background: linear-gradient(90deg, transparent, rgba(216,194,255,0.35), transparent);
+	opacity: 0; transform: scaleX(0.85);
+	transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1);
+	pointer-events: none;
+}
+.site-footer .footer-bottom a:hover, .site-footer .footer-bottom a:focus {
+	color: var(--link-hover);
+	transform: translateY(-2px);
+	text-shadow: var(--link-glow);
+}
+.site-footer .footer-bottom a:hover::after, .site-footer .footer-bottom a:focus::after {
+	opacity: 1; transform: scaleX(1);
 }
 
