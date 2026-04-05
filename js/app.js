@@ -184,11 +184,17 @@
     // position nav underline after includes and setup
     updateNavUnderline();
     // ensure hardware widgets initialize on first load (in case includes-loaded handlers missed)
+    try { initProjectsPagination(document); } catch (e) {}
     try { initHardwareWidgets(document); } catch (e) { /* ignore if fn not defined yet */ }
   });
 
   window.addEventListener('includes-loaded', () => setupSpaNav());
   window.addEventListener('includes-loaded', () => updateNavUnderline());
+
+  // Also hook section-change-end for SPA navigation
+  window.addEventListener('section-change-end', () => {
+    try { initProjectsPagination(document); } catch (e) {}
+  });
 
   // continuous falling stars background
   function initBackgroundStars() {
