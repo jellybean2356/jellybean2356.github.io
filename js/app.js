@@ -178,6 +178,7 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     await runIncludes();
+    document.body.classList.add('loaded');
     setupSpaNav();
     initBackgroundStars();
     // position nav underline after includes and setup
