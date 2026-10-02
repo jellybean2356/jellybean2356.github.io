@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>jellzz - projects</title>
+    <link rel="preload" as="image" href="/assets/responsive/v-parse-800.jpg" imagesrcset="/assets/responsive/v-parse-480.jpg 480w, /assets/responsive/v-parse-800.jpg 800w, /assets/responsive/v-parse-1200.jpg 1200w" imagesizes="(min-width: 700px) 320px, calc(100vw - 2rem)" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/partials/header.css" />
+    <link rel="stylesheet" href="/css/partials/footer.css" />
+    <link rel="stylesheet" href="/css/sections/projects.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+</head>
+<body>
+    <div data-include="/html/partials/header.html"></div>
+
+    <main>
+        <h1>my projects</h1>
+        
+        <div class="project-list">
+            <article class="project-card">
+                <img src="/assets/responsive/v-parse-800.jpg" srcset="/assets/responsive/v-parse-480.jpg 480w, /assets/responsive/v-parse-800.jpg 800w, /assets/responsive/v-parse-1200.jpg 1200w" sizes="(min-width: 700px) 320px, calc(100vw - 2rem)" width="1200" height="976" alt="V-Parse website preview" class="project-image" decoding="async" fetchpriority="high">
+                <div class="project-content">
+                    <h2 class="project-title">V-Parse</h2>
+                    <p class="project-desc">A simple website for scraping valorant daily shop data. Currently in development, loggining in is a little scuffed. Use at your own risk, according to riot policies stuff like this should be avoided.</p>
+                    <div class="project-links">
+                        <a href="https://github.com/jellybean2356/v-parse.github.io" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                            github repo
+                        </a>
+                        <a href="https://v-parse.novelya.me" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            live site
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <img src="/assets/responsive/arbitra-798.jpg" srcset="/assets/responsive/arbitra-480.jpg 480w, /assets/responsive/arbitra-798.jpg 798w" sizes="(min-width: 700px) 320px, calc(100vw - 2rem)" width="798" height="597" alt="Arbitra rendering engine preview" class="project-image" loading="lazy" decoding="async">
+                <div class="project-content">
+                    <h2 class="project-title">Arbitra rendering engine</h2>
+                    <p class="project-desc">A simple rendering engine to project simple scenes. Was written in rust using wgpu. Is currently in the process of being remade into a custom rust based game engine, but its not so polished yet so the source for that is currently unavailable for now.</p>
+                    <div class="project-links">
+                        <a href="https://github.com/jellybean2356/ArbitraRenderer" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                            github repo
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <img src="/assets/responsive/cucumber-800.jpg" srcset="/assets/responsive/cucumber-480.jpg 480w, /assets/responsive/cucumber-800.jpg 800w, /assets/responsive/cucumber-1200.jpg 1200w" sizes="(min-width: 700px) 320px, calc(100vw - 2rem)" width="1200" height="1200" alt="Cucumber Discord bot preview" class="project-image" loading="lazy" decoding="async">
+                <div class="project-content">
+                    <h2 class="project-title">cucumber discord bot</h2>
+                    <p class="project-desc">Was one of my first projects ever. Originally it was a meme discord bot with some meme commands that also evolved into more functional bot which included some moderation or ai stuff. Since i was quite young when doing this, the code sucks and mostly doesnt work now with the new apis so i dont reccommend even trying it, but is still worth mentioning.</p>
+                    <div class="project-links">
+                        <a href="https://github.com/jellybean2356/Cucumber-Discord-Bot" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                            github repo
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <img src="/assets/placeholder.png" width="330" height="257" alt="Portfolio website preview placeholder" class="project-image project-image--placeholder" loading="lazy" decoding="async">
+                <div class="project-content">
+                    <h2 class="project-title">Portfolio</h2>
+                    <p class="project-desc">This is the very page you are currently browsing. Was one of my first projects to introduce me into web development. But yes, as always, the code is a mess since i mainly cared about how this website would look, but im kind of proud of it.</p>
+                    <div class="project-links">
+                        <a href="https://github.com/jellybean2356/jellybean2356.github.io" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                            github repo
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <div data-include="/html/partials/footer.html"></div>
+    <script src="/js/projects.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
+
+

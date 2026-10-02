@@ -3,12 +3,25 @@
 
 html {
 	background-color: #0b0c12;
+	scrollbar-width: none;
 }
 
 body {
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity 0.3s ease, visibility 0.3s;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+* {
+	scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
 }
 
 body.loaded {
@@ -226,15 +239,103 @@ main br { line-height: 0.25; }
 	--link-color: #a191e5; /* soft purple */
 	--link-hover: #7e65c2;
 	--link-glow: 0 6px 18px rgba(106, 0, 255, 0.12);
+	--page-bg: #0b0c12;
+	--page-text: #e6e9ff;
+	--heading-color: #fff;
+	--muted-text: #d6d6e8;
+	--surface-bg: rgba(30, 30, 40, 0.45);
+	--surface-border: rgba(255,255,255,0.08);
+	--panel-bg: rgba(255,255,255,0.02);
+	--panel-border: rgba(255,255,255,0.04);
+	color-scheme: dark;
 }
 
-/* scope to main so header/footer nav links keep their own styles */
-main a { color: var(--link-color); text-decoration: none; position: relative; transition: color 180ms ease, transform 160ms ease, text-shadow 200ms ease; }
-main a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: linear-gradient(90deg, transparent, rgba(216,194,255,0.35), transparent); opacity: 0; transform: scaleX(0.85); transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-main a:hover, main a:focus { color: var(--link-hover); transform: translateY(-2px); text-shadow: var(--link-glow); }
-main a:hover::after, main a:focus::after { opacity: 1; transform: scaleX(1); }
+/* scope to prose links so button-like links keep their own styles */
+main p a { color: var(--link-color); text-decoration: none; position: relative; transition: color 180ms ease, transform 160ms ease, text-shadow 200ms ease; }
+main p a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: linear-gradient(90deg, transparent, rgba(216,194,255,0.35), transparent); opacity: 0; transform: scaleX(0.85); transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+main p a:hover, main p a:focus { color: var(--link-hover); transform: translateY(-2px); text-shadow: var(--link-glow); }
+main p a:hover::after, main p a:focus::after { opacity: 1; transform: scaleX(1); }
 
 @media (prefers-reduced-motion: reduce) {
-	main a { transition: none !important; transform: none !important; }
-	main a::after { transition: none !important; }
+	main p a { transition: none !important; transform: none !important; }
+	main p a::after { transition: none !important; }
+}
+
+html[data-theme="light"] {
+	--link-color: #7058c8;
+	--link-hover: #4d3c94;
+	--link-glow: 0 6px 18px rgba(88, 66, 190, 0.18);
+	--page-bg: #f5f2ff;
+	--page-text: #252333;
+	--heading-color: #151320;
+	--muted-text: #4d4a62;
+	--surface-bg: rgba(255,255,255,0.72);
+	--surface-border: rgba(68,58,112,0.18);
+	--panel-bg: rgba(255,255,255,0.58);
+	--panel-border: rgba(68,58,112,0.14);
+	background-color: var(--page-bg);
+	color-scheme: light;
+}
+
+html[data-theme="light"] body {
+	color: var(--page-text);
+}
+
+html[data-theme="light"] #site-bg {
+	background-color: var(--page-bg);
+}
+
+html[data-theme="light"] #site-bg .cloud {
+	opacity: 0.18;
+	filter: blur(44px) saturate(1.08);
+}
+
+html[data-theme="light"] #site-bg .cloud--a,
+html[data-theme="light"] #site-bg .cloud--b {
+	background: radial-gradient(circle at 40% 40%, rgba(164,145,229,0.42) 0%, rgba(164,145,229,0.14) 30%, transparent 62%);
+}
+
+html[data-theme="light"] #site-bg .cloud--c,
+html[data-theme="light"] #site-bg .cloud--d,
+html[data-theme="light"] #site-bg .cloud--e,
+html[data-theme="light"] #site-bg .cloud--f {
+	background: radial-gradient(circle at 45% 45%, rgba(95,180,190,0.28) 0%, rgba(95,180,190,0.08) 34%, transparent 62%);
+}
+
+html[data-theme="light"] .site-star {
+	background: rgba(70,62,120,0.5) !important;
+	box-shadow: 0 0 10px rgba(95,80,165,0.18) !important;
+	opacity: 0.12 !important;
+}
+
+html[data-theme="light"] main {
+	color: var(--page-text);
+}
+
+html[data-theme="light"] main h1,
+html[data-theme="light"] main h2,
+html[data-theme="light"] main h3 {
+	color: var(--heading-color);
+}
+
+html[data-theme="light"] .project-card,
+html[data-theme="light"] .hw-card {
+	background: var(--surface-bg);
+	border-color: var(--surface-border);
+	box-shadow: 0 14px 38px rgba(54,45,96,0.08);
+}
+
+html[data-theme="light"] .project-desc,
+html[data-theme="light"] .project-card p,
+html[data-theme="light"] .hw-item p {
+	color: var(--muted-text);
+}
+
+html[data-theme="light"] .project-link,
+html[data-theme="light"] .pagination-btn,
+html[data-theme="light"] .hw-prev,
+html[data-theme="light"] .hw-next {
+	color: #2c2542;
+	background: rgba(112,88,200,0.10);
+	border-color: rgba(112,88,200,0.18);
 }

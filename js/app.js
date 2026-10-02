@@ -1,57 +1,178 @@
 (function () {
-  async function runIncludes() {
-    const nodes = document.querySelectorAll('[data-include]');
-    await Promise.all(Array.from(nodes).map(async node => {
-      const url = node.getAttribute('data-include');
+  const loadedScripts = new Set(
+    Array.from(document.scripts)
+      .map(script => script.src)
+      .filter(Boolean)
+  );
+  const appScriptUrl = new URL('/js/app.js', location.origin).href;
+  const themeStorageKey = 'jellybean-theme';
+
+  function cleanPageUrl(value) {
+    const url = new URL(value, location.href);
+    if (url.origin !== location.origin) return url.href;
+
+    // GitHub Pages serves section directories; display their clean URLs.
+    url.pathname = url.pathname.replace(/\/index\.html$/, '/');
+    if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/$/, '');
+    return url.pathname + url.search + url.hash;
+  }
+
+  const initialUrl = cleanPageUrl(location.href);
+  if (initialUrl !== location.pathname + location.search + location.hash) {
+    history.replaceState(history.state, '', initialUrl);
+  }
+
+  applyTheme(getInitialTheme());
+
+  function getInitialTheme() {
+    try {
+      const saved = localStorage.getItem(themeStorageKey);
+      if (saved === 'light' || saved === 'dark') return saved;
+    } catch (e) {}
+
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function applyTheme(theme) {
+    const nextTheme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = nextTheme;
+
+    const toggle = document.querySelector('.theme-toggle');
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', String(nextTheme === 'light'));
+      toggle.title = nextTheme === 'light' ? 'switch to dark mode' : 'switch to light mode';
+    }
+  }
+
+  function setupThemeToggle() {
+    const toggle = document.querySelector('.theme-toggle');
+    if (!toggle || toggle.dataset.themeReady === 'true') return;
+    toggle.dataset.themeReady = 'true';
+    applyTheme(document.documentElement.dataset.theme);
+
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+      const next = current === 'light' ? 'dark' : 'light';
+      applyTheme(next);
       try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-        const text = await res.text();
-        node.innerHTML = text;
-      } catch (err) {
-        console.error(err);
-        node.innerHTML = `<!-- include failed: ${err.message} -->`;
-      }
-    }));
+        localStorage.setItem(themeStorageKey, next);
+      } catch (e) {}
+    });
+  }
+
+  function absoluteUrl(value, base = location.href) {
+    return new URL(value, base).href;
+  }
+
+  function dispatch(name, detail) {
+    try {
+      window.dispatchEvent(new CustomEvent(name, { detail }));
+    } catch (e) {
+      const event = document.createEvent('Event');
+      event.initEvent(name, true, true);
+      event.detail = detail;
+      window.dispatchEvent(event);
+    }
+  }
+
+  async function loadInclude(node) {
+    const includePath = node.getAttribute('data-include');
+    if (!includePath) return;
 
     try {
-      window.dispatchEvent(new CustomEvent('includes-loaded'));
-    } catch (e) {
-      const ev = document.createEvent('Event');
-      ev.initEvent('includes-loaded', true, true);
-      window.dispatchEvent(ev);
+      const res = await fetch(includePath, { cache: 'force-cache' });
+      if (!res.ok) throw new Error(`Failed to fetch ${includePath}: ${res.status}`);
+      node.innerHTML = await res.text();
+    } catch (err) {
+      console.error(err);
+      node.innerHTML = `<!-- include failed: ${err.message} -->`;
     }
+  }
+
+  async function runIncludes(container = document) {
+    const nodes = Array.from(container.querySelectorAll('[data-include]'));
+    await Promise.all(nodes.map(loadInclude));
+    dispatch('includes-loaded');
+  }
+
+  function syncPageStyles(doc, pageUrl) {
+    const current = new Set(
+      Array.from(document.querySelectorAll('link[rel~="stylesheet"][href]'))
+        .map(link => link.href)
+    );
+
+    doc.querySelectorAll('link[rel~="stylesheet"][href]').forEach(link => {
+      const href = absoluteUrl(link.getAttribute('href'), pageUrl);
+      if (current.has(href)) return;
+
+      const next = document.createElement('link');
+      next.rel = 'stylesheet';
+      next.href = href;
+      document.head.appendChild(next);
+      current.add(href);
+    });
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`Failed to load ${src}`));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function syncPageScripts(doc, pageUrl) {
+    const scripts = Array.from(doc.querySelectorAll('script[src]'))
+      .map(script => absoluteUrl(script.getAttribute('src'), pageUrl))
+      .filter(src => src !== appScriptUrl);
+
+    for (const src of scripts) {
+      if (loadedScripts.has(src)) continue;
+      await loadScript(src);
+      loadedScripts.add(src);
+    }
+  }
+
+  function initPageWidgets(container = document) {
+    if (typeof initProjectsPagination === 'function') {
+      initProjectsPagination(container);
+    }
+
+    initHardwareWidgets(container);
   }
 
   async function navigateTo(url, opts = {}) {
     try {
-      // capture current scroll position so SPA navigation doesn't shift the page
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      const res = await fetch(url, {cache: 'no-store'});
+      url = cleanPageUrl(url);
+      const pageUrl = absoluteUrl(url);
+      const res = await fetch(pageUrl);
       if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+
       const text = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
+      const doc = new DOMParser().parseFromString(text, 'text/html');
       const newMain = doc.querySelector('main');
-      const newTitle = doc.querySelector('title');
-
-      if (!newMain) {
-        if (!opts.replace) location.href = url;
-        return;
-      }
-
       const oldMain = document.querySelector('main');
-      if (!oldMain) {
+
+      if (!newMain || !oldMain) {
         if (!opts.replace) location.href = url;
         return;
       }
+
+      syncPageStyles(doc, pageUrl);
 
       oldMain.style.transition = 'opacity 180ms ease';
       oldMain.style.opacity = '0';
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(resolve => setTimeout(resolve, 180));
+
+      oldMain.className = newMain.className;
       oldMain.innerHTML = newMain.innerHTML;
       oldMain.style.opacity = '1';
 
+      const newTitle = doc.querySelector('title');
       if (newTitle) document.title = newTitle.textContent;
 
       if (opts.replace) {
@@ -60,28 +181,15 @@
         history.pushState({}, '', url);
       }
 
-      const nodes = oldMain.querySelectorAll('[data-include]');
-      if (nodes.length) {
-        await Promise.all(Array.from(nodes).map(async node => {
-          const u = node.getAttribute('data-include');
-          try {
-            const r = await fetch(u);
-            const t = await r.text();
-            node.innerHTML = t;
-          } catch (err) {
-            console.error('include failed during SPA navigate', err);
-          }
-        }));
-      }
+      await runIncludes(oldMain);
+      await syncPageScripts(doc, pageUrl);
+      initPageWidgets(oldMain);
 
-      // restore previous scroll position to avoid the page jumping as if the user scrolled
       try {
         window.scrollTo({ top: scrollY, left: 0, behavior: 'auto' });
       } catch (e) {
-        // fallback for older browsers
         window.scrollTo(0, scrollY);
       }
-
     } catch (err) {
       console.error(err);
       location.href = url;
@@ -90,113 +198,79 @@
 
   function setupSpaNav() {
     const header = document.querySelector('header');
-    if (!header) return;
+    if (!header || header.dataset.navReady === 'true') return;
+    header.dataset.navReady = 'true';
 
     header.addEventListener('click', async (e) => {
-      const a = e.target.closest('a');
-      if (!a) return;
-      const href = a.getAttribute('href');
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href');
       if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
       e.preventDefault();
-      // determine if there's a corresponding nav link (so logo clicks target the nav 'home')
+
       const nav = document.querySelector('.site-nav');
       let matchingNavAnchor = null;
       if (nav) {
         const navLinks = Array.from(nav.querySelectorAll('a'));
-        const targetPath = (new URL(href, location.origin)).pathname.replace(/\/$/, '');
-        matchingNavAnchor = navLinks.find(link => (new URL(link.href, location.origin)).pathname.replace(/\/$/, '') === targetPath) || null;
+        const targetPath = absoluteUrl(href).replace(/\/$/, '');
+        matchingNavAnchor = navLinks.find(link => link.href.replace(/\/$/, '') === targetPath) || null;
       }
 
-      // start underline burst animation immediately, prefer matching nav anchor if present
-      updateNavUnderline(true, matchingNavAnchor || null);
-      // trigger background section-change start
-      window.dispatchEvent(new CustomEvent('section-change-start', { detail: { href } }));
+      updateNavUnderline(true, matchingNavAnchor);
+      dispatch('section-change-start', { href });
       await navigateTo(href);
-      // trigger section-change end so background can react
-      window.dispatchEvent(new CustomEvent('section-change-end', { detail: { href } }));
-      // finalize underline position after navigation completes
+      dispatch('section-change-end', { href });
       updateNavUnderline(false);
     });
 
-    window.addEventListener('popstate', (e) => {
-      const url = location.pathname + location.search;
-      navigateTo(url, {replace: true}).then(() => updateNavUnderline());
+    window.addEventListener('popstate', () => {
+      const url = location.pathname + location.search + location.hash;
+      navigateTo(url, { replace: true }).then(() => updateNavUnderline());
     });
   }
 
-  // burst: if burst===true and targetAnchor provided, start a shrink+move then expand animation.
   function updateNavUnderline(burst = false, targetAnchor = null) {
     const nav = document.querySelector('.site-nav');
     const underline = nav && nav.querySelector('.nav-underline');
     if (!nav || !underline) return;
-    const links = Array.from(nav.querySelectorAll('a'));
 
-    // determine active/target anchor
-    let active;
-    if (targetAnchor) {
-      active = targetAnchor;
-    } else {
-      const path = location.pathname.replace(/\/$/, '');
-      active = links.find(a => (new URL(a.href, location.origin)).pathname.replace(/\/$/, '') === path) || links[0];
-    }
-    links.forEach(a => a.classList.toggle('active', a === active));
+    const links = Array.from(nav.querySelectorAll('a'));
+    const currentPath = location.pathname.replace(/\/$/, '');
+    const active = targetAnchor ||
+      links.find(link => new URL(link.href, location.origin).pathname.replace(/\/$/, '') === currentPath) ||
+      links[0];
+
+    if (!active) return;
+
+    links.forEach(link => link.classList.toggle('active', link === active));
 
     const rect = active.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
-    // compute center position
     const centerX = rect.left + rect.width / 2 - navRect.left;
 
-    if (burst && targetAnchor) {
-      // shrink via scaleX and move center simultaneously
-      const shrinkFactor = 0.45; // scaleX factor during shrink
-      // set center position (left = centerX)
-      underline.style.transition = 'left 360ms cubic-bezier(.25,.8,.25,1), transform 120ms ease-out';
-      underline.style.left = centerX + 'px';
-      // set width to full size so scaling is symmetric
-      underline.style.width = rect.width + 'px';
-      // apply shrink using transform: translateX(-50%) scaleX(shrinkFactor)
-      underline.style.transform = `translateX(-50%) scaleX(${shrinkFactor})`;
+    underline.style.width = rect.width + 'px';
+    underline.style.left = centerX + 'px';
 
-      // expand back to full scale
-      setTimeout(() => {
+    if (burst && targetAnchor) {
+      underline.style.transition = 'left 360ms cubic-bezier(.25,.8,.25,1), transform 120ms ease-out';
+      underline.style.transform = 'translateX(-50%) scaleX(0.45)';
+
+      window.setTimeout(() => {
         underline.style.transition = 'transform 420ms cubic-bezier(.2, .0, .2, 1)';
         underline.style.transform = 'translateX(-50%) scaleX(1)';
-        // add glow during expand
         underline.classList.add('nav-underline--glow');
-        // remove glow after expand animation
-        setTimeout(() => underline.classList.remove('nav-underline--glow'), 440);
+        window.setTimeout(() => underline.classList.remove('nav-underline--glow'), 440);
       }, 120);
-    } else {
-      // normal smooth move+resize: set width and center and reset transform
-      underline.style.transition = 'left 280ms cubic-bezier(.2,.8,.2,1), transform 220ms cubic-bezier(.2,.8,.2,1)';
-      underline.style.width = rect.width + 'px';
-      underline.style.left = centerX + 'px';
-      underline.style.transform = 'translateX(-50%) scaleX(1)';
+      return;
     }
+
+    underline.style.transition = 'left 280ms cubic-bezier(.2,.8,.2,1), transform 220ms cubic-bezier(.2,.8,.2,1)';
+    underline.style.transform = 'translateX(-50%) scaleX(1)';
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    await runIncludes();
-    document.body.classList.add('loaded');
-    setupSpaNav();
-    initBackgroundStars();
-    // position nav underline after includes and setup
-    updateNavUnderline();
-    // ensure hardware widgets initialize on first load (in case includes-loaded handlers missed)
-    try { initProjectsPagination(document); } catch (e) {}
-    try { initHardwareWidgets(document); } catch (e) { /* ignore if fn not defined yet */ }
-  });
-
-  window.addEventListener('includes-loaded', () => setupSpaNav());
-  window.addEventListener('includes-loaded', () => updateNavUnderline());
-
-  // Also hook section-change-end for SPA navigation
-  window.addEventListener('section-change-end', () => {
-    try { initProjectsPagination(document); } catch (e) {}
-  });
-
-  // continuous falling stars background
   function initBackgroundStars() {
     if (window._backgroundInit) return;
     window._backgroundInit = true;
@@ -206,180 +280,134 @@
     if (!bg) {
       bg = document.createElement('div');
       bg.id = 'site-bg';
-  bg.innerHTML = '<div class="cloud cloud--a"></div><div class="cloud cloud--b"></div><div class="cloud cloud--c"></div><div class="cloud cloud--d"></div><div class="cloud cloud--e"></div><div class="cloud cloud--f"></div><div class="stars"></div>';
+      bg.innerHTML = '<div class="cloud cloud--a"></div><div class="cloud cloud--b"></div><div class="cloud cloud--c"></div><div class="cloud cloud--d"></div><div class="cloud cloud--e"></div><div class="cloud cloud--f"></div><div class="stars"></div>';
       document.body.appendChild(bg);
     }
 
     const starsContainer = bg.querySelector('.stars');
-
-  // create a pool of stars with consistent spacing and slower overall motion
-  const poolSize = 36; // increase density to avoid visible gaps
-  const baseDur = 36; // base duration in seconds (slower)
-  const durVariance = 0.12; // +/-12% small variation to retain consistent spacing
+    const poolSize = 36;
+    const minVisible = 8;
+    const baseDur = 36;
+    const durVariance = 0.12;
     const starState = [];
+    const fragment = document.createDocumentFragment();
+
     for (let i = 0; i < poolSize; i++) {
-      const s = document.createElement('div');
-      s.className = 'site-star' + (Math.random() > 0.78 ? ' purple' : '');
-      // horizontal position across viewport
-      s.style.left = (Math.random() * 100) + 'vw';
+      const star = document.createElement('div');
+      star.className = 'site-star' + (Math.random() > 0.78 ? ' purple' : '');
+      star.style.left = (Math.random() * 100) + 'vw';
 
-  // assign duration (slow, with small variation)
-  const fallDur = baseDur * (1 + (Math.random() * durVariance * 2 - durVariance)); // baseDur +/- durVariance
+      const fallDur = baseDur * (1 + (Math.random() * durVariance * 2 - durVariance));
+      const phase = (i / poolSize) * fallDur + (Math.random() * 0.03 - 0.015) * fallDur;
+      const drift = Math.random() * 160 - 80;
+      const clampedSpeed = Math.max(0, Math.min(1, 1 - ((fallDur - baseDur * (1 - durVariance)) / (baseDur * (2 * durVariance)))));
+      const alpha = (0.04 + (0.14 - 0.04) * clampedSpeed).toFixed(3);
+      const shadowAlpha = (0.08 + 0.32 * clampedSpeed).toFixed(3);
+      const bgAlpha = (0.36 + 0.4 * clampedSpeed).toFixed(3);
 
-  // spread phases evenly using a global normalized offset so stars are uniformly distributed
-  const globalOffset = i / poolSize; // 0..1
-  // minimal jitter to keep things organic but avoid corridors
-  const jitter = (Math.random() * 0.03 - 0.015) * fallDur; // +/-1.5% of dur
-  const phase = globalOffset * fallDur + jitter;
+      star.classList.add('anim', 'twinkle');
+      star.style.setProperty('--drift', drift.toFixed(1) + 'px');
+      star.style.opacity = alpha;
+      star.style.boxShadow = `0 0 ${6 + 6 * clampedSpeed}px rgba(255,255,255,${shadowAlpha})`;
+      star.style.background = `rgba(255,255,255,${bgAlpha})`;
+      star.style.animationDuration = `${3 + Math.random() * 3}s`;
+      star.style.animationDelay = `-${Math.random() * 4}s`;
 
-      // twinkle timings
-      const twinkleDur = 3 + Math.random() * 3; // 3s - 6s for twinkle
-      const twinkleDelay = Math.random() * 4;
-      s.classList.add('anim', 'twinkle');
-
-      // horizontal drift
-      const drift = (Math.random() * 160 - 80).toFixed(1) + 'px';
-      s.style.setProperty('--drift', drift);
-
-  // map speed (dur) to brightness/opacity: faster (smaller dur) => lighter (higher opacity)
-  // overall make stars darker by lowering opacity range
-  const minOpacity = 0.04; // slowest star opacity (darker)
-  const maxOpacity = 0.14; // fastest star opacity (still subtle)
-  // speedNormalized: faster stars have smaller duration, so invert mapping
-  const speedNormalized = 1 - ((fallDur - baseDur * (1 - durVariance)) / (baseDur * (2 * durVariance))); // 0..1 where 1 ~ fastest
-  const clampedSpeed = Math.max(0, Math.min(1, speedNormalized));
-  const alpha = (minOpacity + (maxOpacity - minOpacity) * clampedSpeed).toFixed(3);
-  s.style.opacity = alpha;
-  // tweak box-shadow to match brightness (subtle and darker overall)
-  const shadowAlpha = (0.08 + 0.32 * clampedSpeed).toFixed(3); // 0.08..0.4
-  s.style.boxShadow = `0 0 ${6 + 6 * clampedSpeed}px rgba(255,255,255,${shadowAlpha})`;
-  // set background alpha so color follows brightness
-  const bgAlpha = (0.36 + 0.4 * clampedSpeed).toFixed(3); // 0.36..0.76
-  s.style.background = `rgba(255,255,255,${bgAlpha})`;
-
-      // configure twinkle animation parameters via inline properties
-      s.style.animationDuration = `${twinkleDur}s`;
-      s.style.animationDelay = `-${twinkleDelay}s`;
-      s.style.animationTimingFunction = 'ease-in-out';
-      s.style.animationIterationCount = 'infinite';
-      s.style.animationFillMode = 'both';
-
-      // append element
-      starsContainer.appendChild(s);
-
-      // store star state for rAF-driven vertical motion
-      starState.push({ el: s, dur: fallDur, phase, drift: parseFloat(drift) });
+      fragment.appendChild(star);
+      starState.push({ el: star, dur: fallDur, phase, drift });
     }
 
-    // when a section change finishes, briefly give the bg an 'active' state for smooth change
+    starsContainer.appendChild(fragment);
+
     window.addEventListener('section-change-end', () => {
-      // persistent variant rotation
       const variants = 3;
-      const cur = Array.from(bg.classList).find(c => c.startsWith('variant-'));
+      const current = Array.from(bg.classList).find(className => className.startsWith('variant-'));
       let next = 0;
-      if (cur) {
-        const v = parseInt(cur.split('-')[1], 10);
-        next = (v + 1) % variants;
-        bg.classList.remove(cur);
+
+      if (current) {
+        next = (parseInt(current.split('-')[1], 10) + 1) % variants;
+        bg.classList.remove(current);
       }
+
       bg.classList.add('variant-' + next);
-  // (no transient star burst here — continuous stars remain active all the time)
-      // brief active pulse as well
-      bg.classList.remove('active'); // reset
+      bg.classList.remove('active');
       void bg.offsetWidth;
       bg.classList.add('active');
-      setTimeout(() => bg.classList.remove('active'), 560);
+      window.setTimeout(() => bg.classList.remove('active'), 560);
     });
 
-    // JS-driven primary loop to animate vertical motion of stars so they always fall
     let rafStart = null;
-    const minVisible = 8; // guarantee at least this many stars are visible on screen
     function rafLoop(ts) {
-      if (!rafStart) rafStart = ts;
-      const now = (ts - rafStart) / 1000; // seconds since loop start
-      const h = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-      const visRangeTop = -0.12 * h;
-      const visRangeBottom = 1.0 * h; // visible roughly 0..h (bottom threshold)
-
-      // first compute positions and track visibility
-      let visibleCount = 0;
-      const positions = starState.map(s => {
-        const localRaw = now + (s.phase || 0);
-        const local = ((localRaw % s.dur) + s.dur) % s.dur; // 0..dur
-        const progress = local / s.dur; // 0..1
-        const y = -0.12 * h + progress * (h + 1.6 * h);
-        const visible = (y >= visRangeTop && y <= visRangeBottom);
-        if (visible) visibleCount++;
-        return { s, y, visible, local };
-      });
-
-      // if we have too few visible stars, nudge some off-screen stars forward so they enter view
-      if (visibleCount < minVisible) {
-        const need = minVisible - visibleCount;
-        // pick candidates that are just above or below view and advance their phase slightly
-        const candidates = positions.filter(p => !p.visible).sort((a, b) => {
-          // prefer those closest to the viewport edge (min distance)
-          const da = Math.min(Math.abs(a.y - visRangeTop), Math.abs(a.y - visRangeBottom));
-          const db = Math.min(Math.abs(b.y - visRangeTop), Math.abs(b.y - visRangeBottom));
-          return da - db;
-        });
-        for (let i = 0; i < Math.min(need, candidates.length); i++) {
-          const cand = candidates[i];
-          // advance their phase by a small fraction of their duration to bring them into view smoothly
-          const advance = (0.08 + Math.random() * 0.06) * cand.s.dur; // 8-14% of dur
-          cand.s.phase = ((cand.s.phase || 0) + advance) % cand.s.dur;
-        }
+      if (document.visibilityState === 'hidden') {
+        requestAnimationFrame(rafLoop);
+        return;
       }
 
-      // apply transforms for all stars
-      positions.forEach(p => {
-        p.s.el.style.transform = `translateX(${p.s.drift}px) translateY(${p.y}px) scale(1)`;
+      if (!rafStart) rafStart = ts;
+      const now = (ts - rafStart) / 1000;
+      const height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+      const visibleTop = -0.12 * height;
+      const visibleBottom = height;
+      let visibleCount = 0;
+
+      const positions = starState.map(star => {
+        const local = (((now + star.phase) % star.dur) + star.dur) % star.dur;
+        const y = -0.12 * height + (local / star.dur) * (height + 1.6 * height);
+        const visible = y >= visibleTop && y <= visibleBottom;
+        if (visible) visibleCount++;
+        return { star, y, visible };
+      });
+
+      if (visibleCount < minVisible) {
+        positions
+          .filter(position => !position.visible)
+          .sort((a, b) => {
+            const aDistance = Math.min(Math.abs(a.y - visibleTop), Math.abs(a.y - visibleBottom));
+            const bDistance = Math.min(Math.abs(b.y - visibleTop), Math.abs(b.y - visibleBottom));
+            return aDistance - bDistance;
+          })
+          .slice(0, minVisible - visibleCount)
+          .forEach(position => {
+            position.star.phase = (position.star.phase + (0.08 + Math.random() * 0.06) * position.star.dur) % position.star.dur;
+          });
+      }
+
+      positions.forEach(position => {
+        position.star.el.style.transform = `translateX(${position.star.drift}px) translateY(${position.y}px) scale(1)`;
       });
 
       requestAnimationFrame(rafLoop);
     }
+
     requestAnimationFrame(rafLoop);
   }
 
-  // JS fallback: animate a star element if CSS animations aren't running
-  function startStarFallback(el, fallDur, drift) {
-    const vw = () => Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const totalTravel = vw() + 160; // in vh-ish units; we'll map to px
-    const startTop = (parseFloat(el.style.top) || 0) / 100 * vw();
-    const driftPx = parseFloat(drift || '0');
-    let start = null;
-    function loop(ts) {
-      if (!start) start = ts;
-      const t = (ts - start) / 1000; // seconds
-      const progress = (t % fallDur) / fallDur; // 0..1 repeating
-      const y = -0.12 * vw() + progress * (vw() + 1.6 * vw());
-      el.style.transform = `translateX(${driftPx}px) translateY(${y}px) scale(1)`;
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-  }
-
-  // no transient spawn function — stars are continuous and always active
-
-  // hardware widgets: simple carousel/toggles for the hardware cards
   function initHardwareWidgets(container = document) {
     const carousels = container.querySelectorAll('[data-widget="carousel"]');
+
     carousels.forEach(root => {
+      if (root.dataset.carouselReady === 'true') return;
+      root.dataset.carouselReady = 'true';
+
       const items = Array.from(root.querySelectorAll('.hw-item'));
       if (!items.length) return;
+
       let idx = 0;
       const prev = root.querySelector('.hw-prev');
       const next = root.querySelector('.hw-next');
+
       function show(i) {
-        items.forEach(it => it.hidden = true);
-        const el = items[i];
-        if (el) el.hidden = false;
+        items.forEach(item => { item.hidden = true; });
+        if (items[i]) items[i].hidden = false;
       }
+
       show(idx);
+
       prev && prev.addEventListener('click', () => {
         idx = (idx - 1 + items.length) % items.length;
         show(idx);
       });
+
       next && next.addEventListener('click', () => {
         idx = (idx + 1) % items.length;
         show(idx);
@@ -387,7 +415,23 @@
     });
   }
 
-  // initialize hardware widgets after includes are loaded (so the footer/header exists)
-  window.addEventListener('includes-loaded', () => initHardwareWidgets(document));
+  document.addEventListener('DOMContentLoaded', async () => {
+    await runIncludes();
+    setupSpaNav();
+    setupThemeToggle();
+    initBackgroundStars();
+    updateNavUnderline();
+    initPageWidgets(document);
+    document.body.classList.add('loaded');
+  });
 
+  window.addEventListener('includes-loaded', () => {
+    setupSpaNav();
+    setupThemeToggle();
+    updateNavUnderline();
+  });
+
+  window.addEventListener('section-change-end', () => {
+    updateNavUnderline();
+  });
 })();

@@ -12,6 +12,34 @@
 
 .site-nav { position: relative; display: inline-flex; align-items: center; }
 .site-nav a { position: relative; padding: 6px 4px; }
+.theme-toggle {
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	margin-left: 1rem;
+	padding: 0;
+	border: 1px solid rgba(255,255,255,0.08);
+	border-radius: 8px;
+	background: rgba(255,255,255,0.025);
+	color: #dcd6ff;
+	cursor: pointer;
+	transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+.theme-toggle:hover {
+	transform: translateY(-3px);
+	background: rgba(255,255,255,0.05);
+	border-color: rgba(255,255,255,0.16);
+}
+.theme-toggle-icon {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: currentColor;
+	box-shadow: -5px -3px 0 0 rgb(20, 20, 25);
+	transition: box-shadow 180ms ease, transform 180ms ease;
+}
 .nav-underline {
 	position: absolute;
 	height: 2px;
@@ -54,7 +82,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.site-nav a, .site-header h1 a, .nav-underline {
+	.site-nav a, .site-header h1 a, .nav-underline, .theme-toggle, .theme-toggle-icon {
 		transition: none !important;
 	}
 }
@@ -78,16 +106,96 @@
 	padding-right: 0.35rem; /* smaller space so the domain sits closer */
 }
 .site-header h1::after {
-	content: '.novelya.me';
+	content: 'about.jellz.me';
 	position: absolute;
 	left: 100%;
 	top: 50%;
-	/* nudge slightly down so it vertically aligns with the jellybean text */
-	transform: translateY(-35%) translateX(0px);
+	/* nudge slightly down so it vertically aligns with the title text */
+	transform: translateY(-35%) translateX(8px);
 	font-size: 0.85rem;
 	color: rgba(200,200,200,0.28);
 	z-index: 1; /* behind the link (z-index:3) but above header background */
 	pointer-events: none;
 	user-select: none;
 	white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+	.site-header {
+		align-items: center;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.55rem;
+		padding: 0.75rem 0.85rem;
+	}
+
+	.site-header h1 {
+		margin: 0;
+		padding-right: 0;
+	}
+
+	.site-header h1::after {
+		display: none;
+	}
+
+	.site-nav {
+		justify-content: center;
+		width: 100%;
+	}
+
+	.site-header nav a {
+		margin-left: 0.75rem;
+	}
+
+	.site-header nav a:first-child {
+		margin-left: 0;
+	}
+
+	.theme-toggle {
+		margin-left: 0.75rem;
+	}
+}
+
+@media (max-width: 360px) {
+	.site-header,
+	.site-header * {
+		font-size: 0.82rem;
+	}
+}
+
+html[data-theme="light"] .site-header {
+	background: linear-gradient(135deg, rgba(240,236,255,0.82) 0%, rgba(255,255,255,0.78) 100%);
+	color: #191624;
+	border: 1px solid rgba(92,76,155,0.14);
+	box-shadow: 0 18px 45px rgba(73,58,130,0.08);
+}
+
+html[data-theme="light"] .site-header a,
+html[data-theme="light"] .theme-toggle {
+	color: #4d4666;
+}
+
+html[data-theme="light"] .site-header h1 a,
+html[data-theme="light"] .site-nav a.active,
+html[data-theme="light"] .site-nav a:hover {
+	color: #171320;
+}
+
+html[data-theme="light"] .site-header h1::after {
+	color: rgba(55,47,82,0.28);
+}
+
+html[data-theme="light"] .nav-underline {
+	background: #171320;
+}
+
+html[data-theme="light"] .theme-toggle {
+	background: rgba(112,88,200,0.08);
+	border-color: rgba(92,76,155,0.16);
+}
+
+html[data-theme="light"] .theme-toggle-icon {
+	background: #4d3c94;
+	box-shadow: 0 0 0 4px rgba(112,88,200,0.18);
+	transform: scale(0.78);
 }

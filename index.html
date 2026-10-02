@@ -3,25 +3,66 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>jellybean</title>
+    <title>jellzz</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/index.css" />
     <link rel="stylesheet" href="/css/partials/header.css" />
     <link rel="stylesheet" href="/css/partials/footer.css" />
     <link rel="stylesheet" href="/css/sections/projects.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
 </head>
 <body>
-    <div data-include="html/partials/header.html"></div>
+    <div data-include="/html/partials/header.html"></div>
 
-    <main>
-        <h1>about jellybean</h1>
-        <p>jellybean is a mechatronics student at a secondary technical school in myjava (slovak city). in his free time, he taught himself several programming languages, including c#, python, html, css, javascript, and the basics of c, c++ and rust. one of his projects is the very website you’re browsing right now — the rest can be found in the <a href="/html/sections/projects.html">projects</a> section.</p> 
-        <p>he got his first 3d printer, an ender 5 plus, about five years ago. since then, he has learned how to design 3d models in onshape, maintain the printer, and prepare models for printing. one of his biggest passions is creating video games in the unity game engine. none of his games are released yet, but some demos might appear in the <a href="/html/sections/projects.html">projects</a> section in the future.</p>
-        <p>he also enjoys tinkering with electronics. his first project was designing a custom macropad from scratch — and it turned out to be a success, which isn’t bad for a first try. outside of computers, he likes to go biking on longer rides, hiking, or just spending time in nature. of course, he’s also a gamer — some of his favorite games are valorant, cs2, terraria, and minecraft.</p>
-        <p>and one more thing: i use arch btw :3</p>
+    <main class="home-main">
+        <section class="home-hero" aria-labelledby="about-title">
+            <div class="home-copy">
+                <p class="eyebrow">programmer / game dev</p>
+                <h1 id="about-title">about jellzz</h1>
+                <p class="intro">jellzz is a mechatronics student at a secondary technical school in myjava. in his free time, he taught himself c#, python, html, css, javascript, and the basics of c, c++ and rust.</p>
+                <p>he used to go by jellybean online, so you may still see that name on older projects. one of those projects is the very website you're browsing right now -- the rest can be found in the <a href="/projects">projects</a> section.</p>
+                <div class="hero-actions" aria-label="featured links">
+                    <a href="/projects">view projects</a>
+                    <a href="https://discord.com/users/713734591114117216" target="_blank" rel="noopener">contact</a>
+                </div>
+            </div>
+
+            <aside class="terminal-card" aria-label="profile snapshot">
+                <div class="terminal-bar"><span></span><span></span><span></span></div>
+                <pre><code>const jellzz = {
+  focus: ["mechatronics", "games", "development"],
+  tools: ["unity", "onshape", "c#"],
+  status: "building weird tools, games, and parts"
+};</code></pre>
+            </aside>
+        </section>
+
+        <section class="focus-grid" aria-label="interests">
+            <article>
+                <span>01</span>
+                <h2>building</h2>
+                <p>3d printing, custom parts, electronics, and anything that turns an idea into a physical object.</p>
+            </article>
+            <article>
+                <span>02</span>
+                <h2>coding</h2>
+                <p>small web tools, experiments in rust, and game prototypes in unity.</p>
+            </article>
+            <article>
+                <span>03</span>
+                <h2>outside</h2>
+                <p>long bike rides, hiking, and time in nature when the screen needs a break.</p>
+            </article>
+        </section>
+
+        <section class="story-panel">
+            <p>he got his first 3d printer, an ender 5 plus, about five years ago. since then, he has learned how to design 3d models in onshape, maintain the printer, and prepare models for printing.</p>
+            <p>he also enjoys tinkering with electronics. his first project was designing a custom macropad from scratch -- and it turned out to be a success, which isn't bad for a first try.</p>
+            <p>outside of computers, he likes valorant, cs2, terraria, minecraft, and one more thing: i use arch btw :3</p>
+        </section>
     </main>
 
-    <div data-include="html/partials/footer.html"></div>
+    <div data-include="/html/partials/footer.html"></div>
 
     <script src="/js/projects.js"></script>
     <script src="/js/app.js"></script>

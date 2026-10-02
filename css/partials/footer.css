@@ -52,3 +52,24 @@
 	opacity: 1; transform: scaleX(1);
 }
 
+html[data-theme="light"] .site-footer {
+	color: #343044;
+}
+
+html[data-theme="light"] .social-link {
+	background: rgba(112,88,200,0.08);
+	color: #4d3c94;
+}
+
+html[data-theme="light"] .social-link:hover {
+	background: rgba(112,88,200,0.14);
+	color: #2c2542;
+}
+
+html[data-theme="light"] .footer-bottom {
+	color: #5d5874;
+}
+
+html[data-theme="light"] .site-footer::before {
+	background: linear-gradient(90deg, rgba(68,58,112,0.00), rgba(68,58,112,0.18), rgba(68,58,112,0.00));
+}
