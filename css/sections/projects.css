@@ -44,6 +44,11 @@
     padding: 1rem;
 }
 
+.project-image--logo {
+    object-fit: contain;
+    background: #181c1e;
+}
+
 @media (min-width: 700px) {
     .project-image {
         width: 320px;
