@@ -140,8 +140,6 @@
     if (typeof initProjectsPagination === 'function') {
       initProjectsPagination(container);
     }
-
-    initHardwareWidgets(container);
   }
 
   async function navigateTo(url, opts = {}) {
@@ -380,39 +378,6 @@
     }
 
     requestAnimationFrame(rafLoop);
-  }
-
-  function initHardwareWidgets(container = document) {
-    const carousels = container.querySelectorAll('[data-widget="carousel"]');
-
-    carousels.forEach(root => {
-      if (root.dataset.carouselReady === 'true') return;
-      root.dataset.carouselReady = 'true';
-
-      const items = Array.from(root.querySelectorAll('.hw-item'));
-      if (!items.length) return;
-
-      let idx = 0;
-      const prev = root.querySelector('.hw-prev');
-      const next = root.querySelector('.hw-next');
-
-      function show(i) {
-        items.forEach(item => { item.hidden = true; });
-        if (items[i]) items[i].hidden = false;
-      }
-
-      show(idx);
-
-      prev && prev.addEventListener('click', () => {
-        idx = (idx - 1 + items.length) % items.length;
-        show(idx);
-      });
-
-      next && next.addEventListener('click', () => {
-        idx = (idx + 1) % items.length;
-        show(idx);
-      });
-    });
   }
 
   document.addEventListener('DOMContentLoaded', async () => {

@@ -188,52 +188,6 @@ main br { line-height: 0.25; }
 	main h1 { font-size: 1.25rem; }
 }
 
-/* hardware page cards */
-.hardware-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.25rem; }
-.hw-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 0.85rem; border-radius: 10px; display:flex; flex-direction:column; }
-.hw-card-head h2 { margin: 0 0 0.5rem 0; font-size: 1rem; }
-.hw-card-body { display:flex; align-items:center; gap:0.6rem; }
-.hw-card-body.hw-single { display:flex; align-items:center; gap:0.6rem; }
-.hw-item { flex:1; }
-.hw-item h3 { margin: 0 0 0.25rem 0; font-size: 0.95rem; }
-.hw-item p { margin: 0; color: #d6d6e8; font-size: 0.92rem; }
-.hw-prev, .hw-next { background: rgba(255,255,255,0.03); border: none; color: #dcd6ff; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: transform 160ms ease, background 160ms ease; }
-.hw-prev:hover:not([disabled]), .hw-next:hover:not([disabled]) { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
-
-/* disabled arrows: visible but muted */
-.hw-prev[disabled], .hw-next[disabled] { opacity: 0.36; filter: grayscale(60%); cursor: default; }
-
-/* images placed in hardware cards: keep them responsive and prevent breaking layout */
-.hardware-grid img, .hw-card img {
-	display:block;
-	max-width: 100%;
-	height: auto;
-	margin-top: 0.6rem;
-	border-radius: 6px;
-}
-
-/* Layout: show image to the right for the currently visible .hw-item only.
-   Use :not([hidden]) so non-active slides stay hidden and are not exposed by layout rules. */
-.hw-card-body { overflow: hidden; }
-.hw-item:not([hidden]) { display: flex; align-items: flex-start; gap: 1rem; }
-.hw-item:not([hidden]) > img { flex: 0 0 220px; max-width: 220px; height: auto; border-radius: 6px; margin-left: 1rem; margin-right: 1rem; }
-.hw-item:not([hidden]) > *:not(img) { display: block; }
-
-/* ensure arrows are above images and clickable */
-.hw-prev, .hw-next { position: relative; z-index: 3; }
-
-.hw-item img { pointer-events: none; }
-
-@media (max-width:480px) {
-    .hw-item:not([hidden]) { flex-direction: column; align-items: flex-start; }
-    .hw-item:not([hidden]) > img { width: 100%; max-width: none; flex: none; margin-top: .6rem; }
-}
-
-@media (max-width:480px) {
-	.hw-card-body { gap:0.35rem; }
-	.hw-prev, .hw-next { padding: 6px; }
-}
-
 /* link styles: brighter, with subtle lift and glow on hover/focus (only for main content) */
 :root {
 	--link-color: #a191e5; /* soft purple */
@@ -318,23 +272,19 @@ html[data-theme="light"] main h3 {
 	color: var(--heading-color);
 }
 
-html[data-theme="light"] .project-card,
-html[data-theme="light"] .hw-card {
+html[data-theme="light"] .project-card {
 	background: var(--surface-bg);
 	border-color: var(--surface-border);
 	box-shadow: 0 14px 38px rgba(54,45,96,0.08);
 }
 
 html[data-theme="light"] .project-desc,
-html[data-theme="light"] .project-card p,
-html[data-theme="light"] .hw-item p {
+html[data-theme="light"] .project-card p {
 	color: var(--muted-text);
 }
 
 html[data-theme="light"] .project-link,
-html[data-theme="light"] .pagination-btn,
-html[data-theme="light"] .hw-prev,
-html[data-theme="light"] .hw-next {
+html[data-theme="light"] .pagination-btn {
 	color: #2c2542;
 	background: rgba(112,88,200,0.10);
 	border-color: rgba(112,88,200,0.18);
